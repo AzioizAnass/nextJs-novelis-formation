@@ -14,6 +14,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Grid from '@mui/material/Grid';
 import Link from 'next/link';
+import Logo from '../../ressources/242474369_1107039696369295_4616048296092468392_n-removebg-preview.png'
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -107,17 +108,13 @@ export default function PrimarySearchAppBar() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="fixed" sx={{ backgroundColor: '#292C6D' }}  >
+            <AppBar position="fixed" sx={{ backgroundColor: '#0c1451' }}  >
                 <Toolbar>
                     <Grid container justifyContent={"space-between"} alignItems="center">
-                        <Grid item>
-                            <Typography
-                                variant="button"
-                                component="div"
-                                sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 'bold' }}
-                            >
-                                Articles Blog
-                            </Typography></Grid>
+                            <Box  style={{backgroundImage:`url(${Logo.src})`,backgroundSize: "100%",height:50,width:50}}/>
+                            
+
+
                         <Grid item><Search>
                             <SearchIconWrapper>
                                 <SearchIcon />

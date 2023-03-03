@@ -16,7 +16,7 @@ export const useSignUp = () => {
     const router = useRouter()
     const { error, isError, isLoading, isSuccess, mutate, mutateAsync, reset, status } = useMutation(postUser, {
         onSuccess: (data) => {
-            router.push("/articles/1")
+            router.push("/articles")
             localStorage.setItem("token",data)
         },
         onError: (e) => { console.log('err', e) }

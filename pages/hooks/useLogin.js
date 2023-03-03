@@ -20,11 +20,10 @@ export const useLogin = () => {
         error, isError, isLoading, isSuccess, mutate, mutateAsync, reset, status
     } = useMutation(login, {
         onSuccess: (data) => {
-            router.push("/articles/1")
+            router.push("/articles")
             console.log(data)
             localStorage.setItem("token",data)
-
-        },
+    },
         onError: (e) => { console.log('err', e) }
     })
 

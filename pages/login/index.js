@@ -19,6 +19,7 @@ import Image from '../ressources/19385.jpg';
 import { useDispatch } from "react-redux";
 
 import { login } from "../features/user"
+import { useGetUserFromToken } from '../hooks/useGetUserFromToken';
 
 
 export default function SignInSide() {
@@ -30,7 +31,13 @@ export default function SignInSide() {
   const [alertToggle, setAlertToggle] = useState(false);
   const route = useRouter();
   const { error, isError, isLoading, isSuccess, mutate } = useLogin();
-
+  
+  
+  const {
+    isLoadingUserToken,
+    isErrorUserToken,
+    userToken
+} = useGetUserFromToken();
 
   const onSubmit = (data) => {
     console.log(data)

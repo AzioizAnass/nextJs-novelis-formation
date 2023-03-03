@@ -12,9 +12,17 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useForm } from "react-hook-form";
 import SendIcon from '@mui/icons-material/Send';
 import TextField from '@mui/material/TextField';
-import { useForm } from "react-hook-form";
 import { useQueryClient } from 'react-query';
 import { useComment } from '../hooks/useComment';
+import { useSelector } from 'react-redux'
+import { useGetUserFromToken } from '../hooks/useGetUserFromToken';
+import ListSubheader from '@mui/material/ListSubheader';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Divider from '@mui/material/Divider';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
 const theme = createTheme();
 
 
@@ -33,27 +41,39 @@ const ArticlePage = () => {
 }
 
 export default function Article({ params }) {
-    
-    
-    const { errorComment, isErrorComment, isLoadingComment, isSuccessComment, mutateComment } = useComment();
 
+
+    const { errorComment, isErrorComment, isLoadingComment, isSuccess, mutate } = useComment();
+    const user = useSelector((state) => state.user.value)
     const { id } = params
     const { isLoading, isError, article } = useGetArticleById(id);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
     const queryClient = useQueryClient()
-    React.useEffect(() => {
-        queryClient.invalidateQueries("articleById")
-      })
+
+
+
+    const [token, setToken] = React.useState(localStorage.getItem('token'))
+
+    const {
+        isLoadingUserToken,
+        isErrorUserToken,
+        userToken
+    } = useGetUserFromToken(token)
+
 
     const onSubmit = (data) => {
-     console.log(data)
-     //const comment = {data , article : {articleId : articleId},utilisateur:{userid}}
-    }
+        const commentContent = data.commentContent
+        const comment = { commentContent: commentContent, article: { articleId: parseInt(id) }, utilisateur: { userid: userToken.userid } }
+        mutate(comment)
+        console.log(JSON.stringify(comment))
+        console.log(comment)
+        if (isErrorComment) {
+            console.log("erreur a hamadi")
+        }
+        queryClient.invalidateQueries("articleById")
 
-    const [italic, setItalic] = React.useState(false);
-    const [fontWeight, setFontWeight] = React.useState('normal');
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    }
 
     if (isLoading) { return <Typography color="white">Loading ...</Typography> }
     if (isError) { return <Typography color="white">Error !!!</Typography> }
@@ -65,29 +85,61 @@ export default function Article({ params }) {
                 <Container sx={{ justifyContent: "center", marginTop: 12 }}>
                     <Grid container direction='row' sx={{ minHeight: 600, borderRadius: 20 }}>
                         <Grid container item direction='column' xs={8} >
-                            <Grid item xs={1} sx={{ backgroundColor: "#e42c64", borderTopLeftRadius: 10, borderTopWidth: "thin", borderColor: "black", justifyContent: "center" }}><Typography align="center"  variant="h4">{article.titre}</Typography></Grid>
-                            <Grid item xs={11} sx={{ backgroundColor: "#614ad3", borderBottomLeftRadius: 10 }}>
-                                <Typography sx={{ color: "white" , padding:2 }}>{article.articleContent}</Typography>
+                            <Grid item xs={1} sx={{ backgroundColor: "#421b9b", borderTopLeftRadius: 10, borderTopWidth: "thin", borderColor: "black", justifyContent: "center" }}>
+                                <Typography align="center" variant="h4" style={{ color: "white" }}>{article.titre}</Typography>
+                            </Grid>
+                            <Grid item xs={11} sx={{ backgroundColor: "#a06ee1", borderBottomLeftRadius: 10 }}>
+                                <Typography sx={{ color: "white", padding: 2 }}>{article.articleContent}</Typography>
                             </Grid>
                         </Grid>
                         <Grid container item xs={4} direction='column'>
-                            <Grid container item xs={11} sx={{ backgroundColor: "#2d248a", borderTopRightRadius: 10 }} direction='column'></Grid>
-                            <Grid container item xs={1} sx={{ backgroundColor: "#121b74", borderBottomRightRadius: 10 }} direction='row' >
-                                <Box onSubmit={handleSubmit(onSubmit)} component="form" style={{justifyContent:"start", paddingLeft:10}}>
-                                <TextField
-                                    xs={8}
-                                    id="commentContent"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start" sx={{color:"white"}}>
-                                                <AccountCircle />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    style={{height:5, marginBottom:2, input: { color: 'white' }}}
+                            <Grid container xs={11} sx={{ borderTopRightRadius: 10, backgroundColor: "#cbbcf6" }} direction='column'>
+
+                                <List item sx={{ marginTop: 0, width: "100%", maxWidth: 360, bgcolor: 'background.paper', backgroundColor: "#cbbcf6", maxHeight: 550, overflow: 'auto' }}>
+
+                                    {article.commentaires.sort().map((commentaire) => (<ListItem alignItems="flex-start" key={commentaire.commentId}>
+                                        <ListItemAvatar>
+                                            <Avatar alt={`${userToken.lastname}`} />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            id={commentaire.commentId}
+                                            primary={`${userToken.lastname} ${userToken.firstname}`}
+                                            secondary={
+                                                <React.Fragment>
+                                                    <Typography
+                                                        sx={{ display: 'inline' }}
+                                                        component="span"
+                                                        variant="body2"
+                                                        color="text.primary"
+                                                    >
+                                                        {commentaire.commentContent}
+                                                    </Typography><Divider />
+                                                </React.Fragment>
+
+                                            }
+                                        />
+                                    </ListItem>))}
+                                </List>
+                            </Grid>
+
+                            <Grid container item xs={1} sx={{ backgroundColor: "#421b9b", borderBottomRightRadius: 10, width: "92%", height: 10 }} direction='row' >
+                                <Box onSubmit={handleSubmit(onSubmit)} component="form" style={{ justifyContent: "start", paddingLeft: 10 }}>
+                                    <TextField
+                                        xs={8}
+                                        id="commentContent"
+                                        color="info"
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start" sx={{ color: "white" }}>
+                                                    <AccountCircle />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        style={{ height: 5, marginBottom: 2, input : {color: 'white'}  }}
                                     {...register("commentContent")}
-                                />
-                                <Button item type="submit" xs={2}style={{width:'17%',height:'70%',marginLeft:20,marginTop:7}}  variant="contained" endIcon={<SendIcon />} size="large"> </Button>
+                                    />
+
+                                    <Button item type="submit" xs={2} style={{ width: '17%', height: '70%', marginLeft: 7, marginTop: 7, backgroundColor: "#421b9b" }} variant="contained" endIcon={<SendIcon />} size="large"> </Button>
                                 </Box>
                             </Grid>
                         </Grid>

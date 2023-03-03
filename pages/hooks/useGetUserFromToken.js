@@ -8,16 +8,12 @@ const axiosOne = axios.create({
 
 export const getUserFromToken = async () => {
     const token = localStorage.getItem("token")
-    const response = await axiosOne.get(`/users/token/${token}`,{
-        headers: {
-            'Authorization': token
-        }
-    })
+    const response = await axiosOne.get(`/users/token/${token}`)
     return response.data
 }
 
-export const useGetUserFromToken = ()=>{
-    const dispatch = useDispatch();
+export const useGetUserFromToken = (token)=>{
+const dispatch = useDispatch()
 const {
     isLoading : isLoadingUserToken,
     isError : isErrorUserToken,
@@ -26,8 +22,7 @@ const {
     isFetching,
     isPreviousData,
 } = useQuery('userToken', () => getUserFromToken(), {onSuccess: () => {
-    console.log("Get data!");
-    dispatch(login(userToken))
+     dispatch(login(userToken))
   }})
 
 return {

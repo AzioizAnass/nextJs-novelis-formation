@@ -21,6 +21,8 @@ import {login} from "../features/user"
 
 import Alert from '@mui/material/Alert';
 import { useSignUp } from '../hooks/useSignUp';
+import { useGetUserFromToken } from '../hooks/useGetUserFromToken';
+import { setToken } from '../features/token';
 
 
 
@@ -33,6 +35,7 @@ export default function SignUp() {
     
 
     const [alertToggle, setAlertToggle] = useState(false)
+
     
     
     
@@ -43,10 +46,11 @@ export default function SignUp() {
 
         if (data.password == data.passwordConfirmation) {
             data["roles"] = "ROLE_USER"; 
-            dispatch(login(data));
-            console.log(data)
+            
+            dispatch(setToken(data))
             mutate(data)
             localStorage.setItem("token",data)
+            
         }
         else { setAlertToggle(true) }
     }

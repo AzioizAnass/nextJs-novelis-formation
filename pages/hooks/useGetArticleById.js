@@ -23,7 +23,7 @@ const {
     isFetching,
     isPreviousData,
 } = useQuery('articleById', () => getArticleById(id), {
-    keepPreviousData : true
+    keepPreviousData : false
 })
 
 return {isLoading,isError,article} ; 
